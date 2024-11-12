@@ -1,14 +1,26 @@
-greeting:
-  message: "hello"
 
 quarkus:
   datasource:
     db-kind: "postgresql"
-    username: "crowd-library"
-    password: "crowd-library"
-    jdbc:
-      url: "jdbc:postgresql://localhost:5432/crowd-library"
 
   hibernate-orm:
     database:
-      generation: drop-and-create
+      generation: none
+
+"%test":
+  quarkus:
+    datasource:
+      devservices:
+        enabled: true
+        reuse: false
+    hibernate-orm:
+      database:
+        generation: drop-and-create
+
+"%dev":
+  quarkus:
+    datasource:
+      username: "crowd-library"
+      password: "crowd-library"
+      jdbc:
+        url: "jdbc:postgresql://localhost:5432/crowd-library"
