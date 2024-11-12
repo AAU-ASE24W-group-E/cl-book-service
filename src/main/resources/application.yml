@@ -1,0 +1,14 @@
+greeting:
+  message: "hello"
+
+quarkus:
+  datasource:
+    db-kind: "postgresql"
+    username: "crowd-library"
+    password: "crowd-library"
+    jdbc:
+      url: "jdbc:postgresql://localhost:5432/crowd-library"
+
+  hibernate-orm:
+    database:
+      generation: drop-and-create
