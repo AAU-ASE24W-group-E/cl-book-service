@@ -18,7 +18,10 @@
 
         <sonar.organization>aau-ase24w-group-e</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>aau-ase24w-group-e_cl-book-service</sonar.projectKey>
+        <sonar.projectKey>${sonar.organization}_${artifactId}</sonar.projectKey>
+        <!-- default branch name for local builds, integrated build should override these -->
+        <sonar.branch.name>main</sonar.branch.name>
+
     </properties>
 
     <dependencyManagement>

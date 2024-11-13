@@ -31,4 +31,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./mvnw -B clean verify sonar:sonar -Dsonar.projectKey=aau-ase24w-group-e_cl-book-service
+        run: ./mvnw -B clean verify sonar:sonar
