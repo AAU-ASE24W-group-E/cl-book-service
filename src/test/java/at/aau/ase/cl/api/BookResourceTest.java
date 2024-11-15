@@ -36,5 +36,6 @@ class BookResourceTest {
 
     @Test
     void getBook() {
+        System.out.println("Test");
     }
 }
