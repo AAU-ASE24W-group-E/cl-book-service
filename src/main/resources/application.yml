@@ -6,6 +6,7 @@ quarkus:
   hibernate-orm:
     database:
       generation: none
+    physical-naming-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 
 "%test":
   quarkus:
@@ -20,7 +21,13 @@ quarkus:
 "%dev":
   quarkus:
     datasource:
-      username: "crowd-library"
-      password: "crowd-library"
-      jdbc:
-        url: "jdbc:postgresql://localhost:5432/crowd-library"
+      devservices:
+        enabled: true
+        reuse: true
+#      username: "crowd-library"
+#      password: "crowd-library"
+#      jdbc:
+#        url: "jdbc:postgresql://localhost:5432/crowd-library"
+    hibernate-orm:
+      database:
+        generation: drop-and-create

@@ -1,10 +1,15 @@
 package at.aau.ase.cl.model;
 
+import at.aau.ase.cl.api.model.BookFormat;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import io.quarkus.panache.common.Sort;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 import java.util.List;
@@ -16,17 +21,31 @@ public class BookEntity extends PanacheEntityBase {
     @Id
     public UUID id;
 
-    @Column(name = "owner_id", nullable = false)
-    public UUID ownerId;
-
-    @Column(name = "title", nullable = false)
+    @Column(nullable = false)
     public String title;
 
-    @Column(name = "author")
-    public String author;
+    @Enumerated(EnumType.STRING)
+    public BookFormat format;
 
-    public List<BookEntity> findByOwnerId(UUID ownerId) {
+    @Column(nullable = false)
+    public String language;
 
-        return find("ownerId", Sort.by("title"), ownerId).list();
-    }
+    public String isbn;
+
+    public String publisher;
+
+    public Integer publishYear;
+
+    public String coverId;
+
+    @ManyToMany
+    @JoinTable(name = "book_authoring",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
+    public List<AuthorEntity> authors;
+
+//    public List<BookEntity> findByOwnerId(UUID ownerId) {
+//
+//        return find("ownerId", Sort.by("title"), ownerId).list();
+//    }
 }

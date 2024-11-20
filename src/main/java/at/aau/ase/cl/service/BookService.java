@@ -1,6 +1,6 @@
 package at.aau.ase.cl.service;
 
-import at.aau.ase.cl.api.model.Book;
+import at.aau.ase.cl.model.AuthorEntity;
 import at.aau.ase.cl.model.BookEntity;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,6 +16,19 @@ public class BookService {
     public BookEntity createBook(BookEntity book) {
         // create book
         book.id = UUID.randomUUID();
+        for(int i = 0; i < book.authors.size(); i++) {
+            var author = book.authors.get(i);
+            if (author.isNew()) {
+                var key = author.computeKey();
+                AuthorEntity existing = AuthorEntity.find("key", key).firstResult();
+                if (existing != null) {
+                    book.authors.set(i, existing);
+                } else {
+                    author.id = UUID.randomUUID();
+                    author.persist();
+                }
+            }
+        }
         book.persist();
         return book;
     }
