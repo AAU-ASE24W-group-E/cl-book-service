@@ -18,15 +18,14 @@ public class BookService {
         book.id = UUID.randomUUID();
         for(int i = 0; i < book.authors.size(); i++) {
             var author = book.authors.get(i);
-            if (author.isNew()) {
-                var key = author.computeKey();
-                AuthorEntity existing = AuthorEntity.findByKey(key);
-                if (existing != null) {
-                    book.authors.set(i, existing);
-                } else {
-                    author.id = UUID.randomUUID();
-                    author.persist();
-                }
+            assert author.isNew();
+            var key = author.computeKey();
+            AuthorEntity existing = AuthorEntity.findByKey(key);
+            if (existing != null) {
+                book.authors.set(i, existing);
+            } else {
+                author.id = UUID.randomUUID();
+                author.persist();
             }
         }
         book.persist();
