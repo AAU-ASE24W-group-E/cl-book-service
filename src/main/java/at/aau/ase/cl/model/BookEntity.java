@@ -43,9 +43,4 @@ public class BookEntity extends PanacheEntityBase {
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
     public List<AuthorEntity> authors;
-
-//    public List<BookEntity> findByOwnerId(UUID ownerId) {
-//
-//        return find("ownerId", Sort.by("title"), ownerId).list();
-//    }
 }

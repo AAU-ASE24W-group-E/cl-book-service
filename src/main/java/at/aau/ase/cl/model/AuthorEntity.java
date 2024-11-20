@@ -3,14 +3,11 @@ package at.aau.ase.cl.model;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,8 +25,9 @@ public class AuthorEntity extends PanacheEntityBase {
     @Column(nullable = false)
     public String name;
 
-    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
-    public List<BookEntity> books;
+    public static AuthorEntity findByKey(String key) {
+        return find("key", key).firstResult();
+    }
 
     /**
      * Computes the key for this author entity based on the name.

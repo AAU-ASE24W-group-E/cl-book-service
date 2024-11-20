@@ -20,7 +20,7 @@ public class BookService {
             var author = book.authors.get(i);
             if (author.isNew()) {
                 var key = author.computeKey();
-                AuthorEntity existing = AuthorEntity.find("key", key).firstResult();
+                AuthorEntity existing = AuthorEntity.findByKey(key);
                 if (existing != null) {
                     book.authors.set(i, existing);
                 } else {
