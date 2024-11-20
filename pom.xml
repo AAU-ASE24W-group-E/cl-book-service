@@ -19,9 +19,6 @@
         <sonar.organization>aau-ase24w-group-e-1</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/jacoco-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-        <!-- default branch name for local builds, integrated build should override these -->
-        <sonar.branch.name>main</sonar.branch.name>
-
     </properties>
 
     <dependencyManagement>
