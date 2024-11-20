@@ -40,9 +40,12 @@ public class AuthorEntity extends PanacheEntityBase {
         if (name.contains(",")) {
             surname = name.substring(0, name.indexOf(","));
             forenames = name.substring(name.indexOf(",") + 1);
-        } else {
+        } else if (name.contains(" ")) {
             surname = name.substring(name.lastIndexOf(" ") + 1);
             forenames = name.substring(0, name.lastIndexOf(" "));
+        } else {
+            key = name.toUpperCase();
+            return key;
         }
         // replace forenames with initials
         String initials = Arrays.stream(forenames.trim().split("[ .]+"))
