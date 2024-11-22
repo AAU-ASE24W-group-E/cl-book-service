@@ -1,6 +1,6 @@
 package at.aau.ase.cl.mapper;
 
-import at.aau.ase.cl.model.AuthorEntity;
+import at.aau.ase.cl.domain.AuthorEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

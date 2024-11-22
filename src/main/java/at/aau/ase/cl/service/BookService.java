@@ -1,7 +1,7 @@
 package at.aau.ase.cl.service;
 
-import at.aau.ase.cl.model.AuthorEntity;
-import at.aau.ase.cl.model.BookEntity;
+import at.aau.ase.cl.domain.AuthorEntity;
+import at.aau.ase.cl.domain.BookEntity;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -40,5 +40,9 @@ public class BookService {
         }
         Log.debugf("Book with id %s found: %s", id, book);
         return book;
+    }
+
+    public BookEntity importBookByIsbn(String isbn) {
+        return null;
     }
 }

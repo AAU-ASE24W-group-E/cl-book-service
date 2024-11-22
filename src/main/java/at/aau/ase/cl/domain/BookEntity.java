@@ -1,8 +1,9 @@
-package at.aau.ase.cl.model;
+package at.aau.ase.cl.domain;
 
 import at.aau.ase.cl.api.model.BookFormat;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -30,7 +31,8 @@ public class BookEntity extends PanacheEntityBase {
     @Column(nullable = false)
     public String language;
 
-    public String isbn;
+    @Embedded
+    public ISBN isbn;
 
     public String publisher;
 

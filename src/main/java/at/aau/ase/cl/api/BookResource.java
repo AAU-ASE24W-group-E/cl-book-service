@@ -6,6 +6,7 @@ import at.aau.ase.cl.service.BookService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
@@ -26,6 +27,15 @@ public class BookResource {
         // create book
         var model = BookMapper.INSTANCE.map(book);
         model = service.createBook(model);
+        var result = BookMapper.INSTANCE.map(model);
+        return Response.ok(result).build();
+    }
+
+    @PUT
+    @Path("isbn/{isbn}")
+    public Response importBookByIsbn(@PathParam("isbn") String isbn) {
+        // import book by isbn
+        var model = service.importBookByIsbn(isbn);
         var result = BookMapper.INSTANCE.map(model);
         return Response.ok(result).build();
     }

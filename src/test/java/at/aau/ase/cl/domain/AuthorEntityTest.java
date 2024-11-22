@@ -1,4 +1,4 @@
-package at.aau.ase.cl.model;
+package at.aau.ase.cl.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

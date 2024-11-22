@@ -1,4 +1,4 @@
-package at.aau.ase.cl.model;
+package at.aau.ase.cl.domain;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
