@@ -21,18 +21,19 @@ public record Book(
     @Size(min = 10, max = 17)
     String isbn,
 
-    @Schema(description = "Main language of the book as ISO language tag", example = "en-GB")
-    @Size(min = 2, max = 10)
+    @Schema(description = "Languages of the book as IETF BCP 47 language tags")
     @NotNull
-    String language,
+    List<@Size(min = 2, max = 10) String> languages,
 
     BookFormat format,
 
     String publisher,
 
-    int publishYear,
+    Integer publishYear,
 
     String coverId,
+
+    String edition,
 
     @Schema(description = "List of authors of the book")
     List<String> authors

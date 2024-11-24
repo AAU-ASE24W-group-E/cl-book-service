@@ -8,6 +8,23 @@ quarkus:
       generation: none
     physical-naming-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 
+  rest-client:
+    logging:
+      scope: request-response
+      body-limit: 4096
+    openlibrary:
+      url: "https://openlibrary.org"
+      follow-redirects: true
+
+  log:
+    level: INFO
+    min-level: TRACE
+    category:
+      "at.aau.ase.cl":
+        level: DEBUG
+      "org.jboss.resteasy.reactive.client.logging":
+        level: DEBUG
+
 "%test":
   quarkus:
     datasource:
@@ -17,6 +34,10 @@ quarkus:
     hibernate-orm:
       database:
         generation: drop-and-create
+    rest-client:
+      logging:
+        scope: request-response
+        body-limit: 16384
 
 "%dev":
   quarkus:

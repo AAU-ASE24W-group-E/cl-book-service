@@ -28,8 +28,8 @@ public class BookEntity extends PanacheEntityBase {
     @Enumerated(EnumType.STRING)
     public BookFormat format;
 
-    @Column(nullable = false)
-    public String language;
+    /** comma separated list of alpha-2 language codes, e.g. 'en,de' */
+    public String languages;
 
     @Embedded
     public ISBN isbn;
@@ -39,6 +39,8 @@ public class BookEntity extends PanacheEntityBase {
     public Integer publishYear;
 
     public String coverId;
+
+    public String edition;
 
     @ManyToMany
     @JoinTable(name = "book_authoring",

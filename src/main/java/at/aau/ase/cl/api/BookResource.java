@@ -10,6 +10,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -33,8 +34,11 @@ public class BookResource {
 
     @PUT
     @Path("isbn/{isbn}")
+    @Operation(summary = "Import book by ISBN")
+    @APIResponse(responseCode = "200", description = "OK", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = Book.class))})
+    @APIResponse(responseCode = "404", description = "Not Found")
     public Response importBookByIsbn(@PathParam("isbn") String isbn) {
-        // import book by isbn
         var model = service.importBookByIsbn(isbn);
         var result = BookMapper.INSTANCE.map(model);
         return Response.ok(result).build();
