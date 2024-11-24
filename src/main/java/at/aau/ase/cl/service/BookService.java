@@ -55,9 +55,14 @@ public class BookService {
 
     public BookEntity importBookByIsbn(String isbnString) {
         ISBN isbn = ISBN.fromString(isbnString);
+        BookEntity book = BookEntity.findByIsbn(isbn);
+        if (book != null) {
+            Log.infof("Book with isbn %s already exists: %s", isbnString, book);
+            return book;
+        }
         // fetch book
         var olBook = openLibraryClient.getBookByIsbn(isbn.toPlainString());
-        BookEntity book = OpenLibraryMapper.INSTANCE.mapBook(olBook);
+        book = OpenLibraryMapper.INSTANCE.mapBook(olBook);
         book.isbn = isbn;
         // fetch authors vis works
         book.authors = olBook.works().stream()
@@ -70,7 +75,7 @@ public class BookService {
                 .toList();
         // create book
         book = createBook(book);
-        Log.infof("Imported book: %s", book);
+        Log.infof("Imported book with isbn %s: %s", isbnString, book);
         return book;
     }
 
@@ -86,5 +91,15 @@ public class BookService {
             Log.warn("Failed to fetch author: " + authorKey, e);
             return null;
         }
+    }
+
+    @Transactional
+    public BookEntity getBookByIsbn(String isbnString) {
+        ISBN isbn = ISBN.fromString(isbnString);
+        var book = BookEntity.findByIsbn(isbn);
+        if (book == null) {
+            throw new NotFoundException("Book with isbn " + isbn + " not found");
+        }
+        return book;
     }
 }

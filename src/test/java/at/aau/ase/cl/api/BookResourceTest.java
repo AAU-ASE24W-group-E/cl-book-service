@@ -113,5 +113,45 @@ class BookResourceTest {
                 .body("id", notNullValue());
     }
 
+    @Test
+    void findByIsbnShouldReturnImportedBook() {
+        String isbn = "978-0-618-34399-7";
 
+        given().pathParam("isbn", isbn)
+                .put("/isbn/{isbn}")
+                .then()
+                .statusCode(200);
+
+        given().pathParam("isbn", isbn)
+                .get("/isbn/{isbn}")
+                .then()
+                .statusCode(200)
+                .log().body(true)
+                .body("title", equalTo("The Lord of the Rings"))
+                .body("authors[0]", equalTo("J.R.R. Tolkien"))
+                .body("languages[0]", equalTo("en"))
+                .body("isbn", equalTo("978-0-618-34399-7"))
+                .body("publishYear", equalTo(2003))
+                .body("format", equalTo("HARDCOVER"))
+                .body("publisher", equalTo("Houghton Mifflin Company"))
+                .body("coverId", equalTo("14627570"))
+                .body("edition", equalTo("Movie tie-in edition (1)"));
+    }
+
+    @Test
+    void findByIsbnShouldReturn400ForInvalidIsbn() {
+        given().pathParam("isbn", "978-0-618-34399-9")
+                .get("/isbn/{isbn}")
+                .then()
+                .statusCode(400)
+                .body("type", equalTo("IllegalArgumentException"));
+    }
+
+    @Test
+    void findByIsbnShouldReturn404ForUnknownIsbn() {
+        given().pathParam("isbn", "9780385472579")
+                .get("/isbn/{isbn}")
+                .then()
+                .statusCode(404);
+    }
 }

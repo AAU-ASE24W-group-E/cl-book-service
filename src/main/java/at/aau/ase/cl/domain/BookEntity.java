@@ -2,16 +2,19 @@ package at.aau.ase.cl.domain;
 
 import at.aau.ase.cl.api.model.BookFormat;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.quarkus.logging.Log;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
 import java.util.UUID;
@@ -42,9 +45,15 @@ public class BookEntity extends PanacheEntityBase {
 
     public String edition;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "book_authoring",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
     public List<AuthorEntity> authors;
+
+    public static BookEntity findByIsbn(ISBN isbn) {
+        BookEntity book = find("isbn.number", isbn.toLong()).firstResult();
+        Log.debugf("findBook by isbn %s -> %s", isbn, book);
+        return book;
+    }
 }
