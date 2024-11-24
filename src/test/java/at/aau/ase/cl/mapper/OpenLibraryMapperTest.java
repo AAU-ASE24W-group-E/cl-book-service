@@ -6,6 +6,8 @@ import at.aau.ase.cl.client.openlibrary.model.Book;
 import at.aau.ase.cl.client.openlibrary.model.KeyValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
@@ -142,5 +144,55 @@ class OpenLibraryMapperTest {
     void mapFormatShouldMapEbook(String format) {
         var mapped = mapper.mapFormat(format);
         assertEquals(BookFormat.EBOOK, mapped);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "\t", "unknown"})
+    void mapFormatShouldReturnNullForNullOrBlankOrUnknownFormat(String format) {
+        var mapped = mapper.mapFormat(format);
+        assertNull(mapped);
+    }
+
+    @ParameterizedTest
+    @CsvSource(textBlock = """
+            eng,en
+            deu,de
+            ger,de
+            fra,fr
+            fre,fr
+            spa,es
+            rus,ru
+            ita,it
+            chi,zh
+            zho,zh
+            jpn,ja
+            ara,ar
+            arb,ar
+            por,pt
+            """)
+    void mapLanguageShouldMapFromAlpha3ToAlpha2Codes(String alpha3code, String alpha2code) {
+        var mapped = mapper.mapLanguage(new KeyValue("/languages/" + alpha3code));
+        assertEquals(alpha2code, mapped);
+    }
+
+    @Test
+    void mapLanguageShouldReturnNullForUnknownLanguages() {
+        var mapped = mapper.mapLanguage(new KeyValue("/languages/unknown"));
+        assertNull(mapped);
+    }
+
+    @Test
+    void mapLanguageShouldReturnNullForNull() {
+        KeyValue key = null;
+        var mapped = mapper.mapLanguage(key);
+        assertNull(mapped);
+    }
+
+    @Test
+    void mapLanguageShouldReturnNullForNullLanguageKey() {
+        KeyValue key = new KeyValue(null);
+        var mapped = mapper.mapLanguage(key);
+        assertNull(mapped);
     }
 }

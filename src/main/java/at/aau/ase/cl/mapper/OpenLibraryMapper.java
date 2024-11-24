@@ -116,7 +116,7 @@ public interface OpenLibraryMapper {
             case "jpn" -> "ja";
             case "ara", "arb" -> "ar";
             case "por" -> "pt";
-            default -> null;
+            case null, default -> null;
         };
     }
 
