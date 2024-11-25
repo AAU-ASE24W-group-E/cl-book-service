@@ -15,7 +15,7 @@ public record Book(
         String edition,
         @JsonProperty("physical_format")
         String format,
-        int[] covers,
+        List<Integer> covers,
         List<KeyValue> works
 ) {
 }

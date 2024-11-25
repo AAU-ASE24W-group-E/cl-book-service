@@ -6,6 +6,7 @@ import at.aau.ase.cl.client.openlibrary.model.Book;
 import at.aau.ase.cl.client.openlibrary.model.KeyValue;
 import at.aau.ase.cl.domain.AuthorEntity;
 import at.aau.ase.cl.domain.BookEntity;
+import at.aau.ase.cl.domain.Languages;
 import io.quarkus.logging.Log;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Mapper
 public interface OpenLibraryMapper {
@@ -58,11 +58,11 @@ public interface OpenLibraryMapper {
     }
 
     @Named("cover")
-    default String mapCoverId(int[] covers) {
-        if (covers == null || covers.length == 0) {
+    default String mapCoverId(List<Integer> covers) {
+        if (covers == null || covers.isEmpty()) {
             return null;
         }
-        return Integer.toString(covers[0]);
+        return covers.getFirst().toString();
     }
 
     default BookFormat mapFormat(String src) {
@@ -86,16 +86,15 @@ public interface OpenLibraryMapper {
     }
 
     @Named("languages")
-    default String mapLanguages(List<KeyValue> languages) {
+    default Languages mapLanguages(List<KeyValue> languages) {
         if (languages == null || languages.isEmpty()) {
             return null;
         }
-        return languages.stream()
+        return Languages.of(languages.stream()
                 .map(this::mapLanguage)
                 .filter(Objects::nonNull)
                 .distinct()
-                .sorted()
-                .collect(Collectors.joining(","));
+                .sorted());
     }
 
     /**

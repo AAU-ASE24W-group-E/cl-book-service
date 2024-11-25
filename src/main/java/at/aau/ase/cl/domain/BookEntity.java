@@ -14,7 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +31,8 @@ public class BookEntity extends PanacheEntityBase {
     public BookFormat format;
 
     /** comma separated list of alpha-2 language codes, e.g. 'en,de' */
-    public String languages;
+    @Embedded
+    public Languages languages;
 
     @Embedded
     public ISBN isbn;

@@ -21,14 +21,14 @@ class OpenLibraryMapperTest {
     void mapBook() {
         Book book = new Book("The Title", List.of("Publisher inc"), "2024", "/books/OL123456E",
                 List.of(new KeyValue("/languages/eng")), "1st edition", "paperback",
-                new int[]{123456}, List.of(new KeyValue("/works/OL1234W")));
+                List.of(123456), List.of(new KeyValue("/works/OL1234W")));
 
         var mapped = mapper.mapBook(book);
 
         assertEquals("The Title", mapped.title);
         assertEquals("Publisher inc", mapped.publisher);
         assertEquals(2024, mapped.publishYear);
-        assertEquals("en", mapped.languages);
+        assertEquals("en", mapped.languages.toString());
         assertEquals("1st edition", mapped.edition);
         assertEquals(BookFormat.PAPERBACK, mapped.format);
         assertEquals("123456", mapped.coverId);
@@ -99,21 +99,21 @@ class OpenLibraryMapperTest {
 
     @Test
     void mapCoverIdShouldReturnFirstEntryFromList() {
-        int[] covers = new int[]{123456, 789012};
+        var covers = List.of(123456, 789012);
         var mapped = mapper.mapCoverId(covers);
         assertEquals("123456", mapped);
     }
 
     @Test
     void mapCoverIdShouldReturnNullForEmptyList() {
-        int[] covers = new int[]{};
+        List<Integer> covers = List.of();
         var mapped = mapper.mapCoverId(covers);
         assertNull(mapped);
     }
 
     @Test
     void mapCoverIdShouldReturnNullForNullList() {
-        int[] covers = null;
+        List<Integer> covers = null;
         var mapped = mapper.mapCoverId(covers);
         assertNull(mapped);
     }

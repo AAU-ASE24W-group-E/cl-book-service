@@ -10,18 +10,18 @@ import jakarta.persistence.Embeddable;
  */
 @Embeddable
 public class ISBN {
-    @Column(name = "isbn13")
+    @Column(name = "isbn_number")
     long number;
 
-    @Column(name = "isbn_original")
-    String isbn;
+    @Column(name = "isbn_display_number")
+    String displayNumber;
 
     public ISBN() {
     }
 
-    ISBN(long number, String isbn) {
+    ISBN(long number, String displayNumber) {
         this.number = number;
-        this.isbn = isbn;
+        this.displayNumber = displayNumber;
     }
 
     /**
@@ -101,7 +101,7 @@ public class ISBN {
     }
 
     public String toString() {
-        return isbn;
+        return displayNumber;
     }
 
     public String toPlainString() {
@@ -114,7 +114,8 @@ public class ISBN {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof ISBN && ((ISBN) obj).number == number;
+        return obj instanceof ISBN other
+               && other.number == number;
     }
 
     @Override

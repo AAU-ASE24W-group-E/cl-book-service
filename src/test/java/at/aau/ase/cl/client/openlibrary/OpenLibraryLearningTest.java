@@ -4,7 +4,6 @@ import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -18,9 +17,6 @@ class OpenLibraryLearningTest {
     @RestClient
     OpenLibraryClient openLibraryClient;
 
-    @BeforeEach
-    void setUp() {
-    }
 
     @Test
     void getBookByIsbn() {

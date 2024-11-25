@@ -4,29 +4,18 @@ import at.aau.ase.cl.api.model.Book;
 import at.aau.ase.cl.domain.AuthorEntity;
 import at.aau.ase.cl.domain.BookEntity;
 import at.aau.ase.cl.domain.ISBN;
+import at.aau.ase.cl.domain.Languages;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Mapper
 public interface BookMapper {
     BookMapper INSTANCE = Mappers.getMapper(BookMapper.class);
 
-    Set<String> LANGUAGE_TAGS = Arrays.stream(Locale.getAvailableLocales())
-            .map(Locale::toLanguageTag)
-            .collect(Collectors.toSet());
-
-    @Mapping(target = "languages", source = "languages", qualifiedByName = "languages")
     BookEntity map(Book book);
 
-    @Mapping(target = "languages", source = "languages", qualifiedByName = "languages")
     Book map(BookEntity bookEntity);
 
     default ISBN mapIsbn(String isbn) {
@@ -53,26 +42,18 @@ public interface BookMapper {
         return src != null ? src.name : null;
     }
 
-    @Named("languages")
-    default String mapLanguages(List<String> languages) {
+    default Languages mapLanguages(List<String> languages) {
         if (languages == null || languages.isEmpty()) {
             return null;
         }
-        return String.join(",", languages);
+        return Languages.of(languages);
     }
 
-    @Named("languages")
-    default List<String> mapLanguages(String languages) {
-        if (languages == null || languages.isBlank()) {
-            return null;
+    default List<String> mapLanguages(Languages languages) {
+        if (languages == null) {
+            return List.of();
         }
-
-        return Arrays.stream(languages.split(","))
-                .map(String::trim)
-                .filter(LANGUAGE_TAGS::contains)
-                .distinct()
-                .sorted()
-                .toList();
+        return languages.toList();
     }
 
 }
