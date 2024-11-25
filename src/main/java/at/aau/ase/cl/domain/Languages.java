@@ -19,13 +19,13 @@ public class Languages {
     static final String SEPARATOR = ",";
 
     @Column(name = "languages")
-    String encoded;
+    String singleString;
 
     public Languages() {
     }
 
-    Languages(String encoded) {
-        this.encoded = encoded;
+    Languages(String singleString) {
+        this.singleString = singleString;
     }
 
     public static Languages of(List<String> tags) {
@@ -33,18 +33,17 @@ public class Languages {
     }
 
     public static Languages of(Stream<String> s) {
-        var enc = s.filter(LANGUAGE_TAGS::contains)
+        var single = s.filter(LANGUAGE_TAGS::contains)
                 .collect(Collectors.joining(SEPARATOR));
-        return new Languages(enc);
+        return new Languages(single);
     }
 
     public List<String> toList() {
-        return Arrays.stream(encoded.split(SEPARATOR))
-                .collect(Collectors.toList());
+        return Arrays.asList(singleString.split(SEPARATOR));
     }
 
     @Override
     public String toString() {
-        return encoded;
+        return singleString;
     }
 }
