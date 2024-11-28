@@ -48,9 +48,6 @@ public class ISBN {
 
     static long convert10to13(String isbn10) {
         // see https://isbn-information.com/convert-isbn-10-to-isbn-13.html
-        if (isbn10.length() != 10) {
-            throw new IllegalArgumentException("Invalid ISBN-10 length: " + isbn10.length());
-        }
         validateIsbn10(isbn10);
         var num = "978" + isbn10.substring(0, 9);
         int rem = calculateIsbn13ChecksumRemainder(num);
