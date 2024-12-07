@@ -19,7 +19,6 @@ quarkus:
   # see https://quarkus.io/guides/container-image#customizing
   container-image:
     group: "AAU-ASE24W-group-E"
-    registry: "ghcr.io"
 
   # see https://quarkus.io/guides/logging#configuration
   log:
