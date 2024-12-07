@@ -1,4 +1,7 @@
-name: SonarQube Cloud
+## A basic GitHub Actions workflow for your Quarkus application.
+
+name: CI build
+
 on:
   push:
     branches:
@@ -18,21 +21,16 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 21
-          distribution: 'zulu' # Alternative distribution options are available.
+          distribution: graalvm
+          cache: maven
       - name: Cache SonarQube Cloud packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=AAU-ASE24W-group-E_cl-book-service
+        run: ./mvnw --batch-mode --no-transfer-progress clean verify sonar:sonar -Dsonar.projectKey=AAU-ASE24W-group-E_cl-book-service
