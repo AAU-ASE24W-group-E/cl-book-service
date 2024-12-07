@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - '*-*'  # All feature branches created from the project issues, e.g. 1-create-book
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
