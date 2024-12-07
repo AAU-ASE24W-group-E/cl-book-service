@@ -41,7 +41,7 @@ public class BookResource {
     }
 
     @PUT
-    @Path("isbn/{isbn}")
+    @Path("book/isbn/{isbn}")
     @Operation(summary = "Import book by ISBN")
     @APIResponse(responseCode = "200", description = "OK", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Book.class))})
@@ -64,7 +64,7 @@ public class BookResource {
     }
 
     @GET
-    @Path("isbn/{isbn}")
+    @Path("book/isbn/{isbn}")
     @APIResponse(responseCode = "200", description = "OK", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Book.class))})
     @APIResponse(responseCode = "400", description = "Bad Request")

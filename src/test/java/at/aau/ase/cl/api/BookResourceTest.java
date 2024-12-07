@@ -21,6 +21,12 @@ import static org.mockito.Mockito.*;
 
 @QuarkusTest
 class BookResourceTest {
+    static final String PATH_BOOK = "/book";
+    static final String PATH_BOOK_BY_ID = "/book/{id}";
+    static final String PATH_BOOK_BY_ISBN = "/book/isbn/{isbn}";
+
+    static final String TEST_ISBN = "978-0-618-34399-7";
+    
     @InjectMock
     @RestClient
     OpenLibraryClient openLibraryClientMock;
@@ -54,17 +60,17 @@ class BookResourceTest {
     void createBook() {
         given()
                 .contentType(ContentType.JSON)
-                .body(new Book(null, "The Title", "978-0-618-34399-7", List.of("en"), BookFormat.HARDCOVER,
+                .body(new Book(null, "The Title", TEST_ISBN, List.of("en"), BookFormat.HARDCOVER,
                         "Publisher inc", 2024, "OL123", "edition",
                         List.of("A. U. Thor")))
-                .post("/book")
+                .post(PATH_BOOK)
                 .then()
                 .statusCode(200)
                 .log().body(true)
                 .body("title", equalTo("The Title"))
                 .body("authors[0]", equalTo("A. U. Thor"))
                 .body("languages[0]", equalTo("en"))
-                .body("isbn", equalTo("978-0-618-34399-7"))
+                .body("isbn", equalTo(TEST_ISBN))
                 .body("publishYear", equalTo(2024))
                 .body("format", equalTo("HARDCOVER"))
                 .body("publisher", equalTo("Publisher inc"))
@@ -75,9 +81,9 @@ class BookResourceTest {
     @Test
     void createMultipleBooksOfSameAuthor() {
         given().contentType(ContentType.JSON)
-                .body(new Book(null, "The Title", "978-0-618-34399-7", List.of("en"), BookFormat.HARDCOVER,
+                .body(new Book(null, "The Title", TEST_ISBN, List.of("en"), BookFormat.HARDCOVER,
                         "Publisher inc", 2024, "OL123", null, List.of("A. U. Thor")))
-                .post("/book")
+                .post(PATH_BOOK)
                 .then()
                 .statusCode(200)
                 .body("title", equalTo("The Title"))
@@ -86,7 +92,7 @@ class BookResourceTest {
         given().contentType(ContentType.JSON)
                 .body(new Book(null, "Der Titel", "978-0-198-52663-6", List.of("de-AT"), BookFormat.PAPERBACK,
                         "Publisher inc", 2024, "OL125", null, List.of("Arthur Ulrich Thor")))
-                .post("/book")
+                .post(PATH_BOOK)
                 .then()
                 .statusCode(200)
                 .body("title", equalTo("Der Titel"))
@@ -96,15 +102,14 @@ class BookResourceTest {
 
     @Test
     void importBookByIsbn() {
-        given().pathParam("isbn", "978-0-618-34399-7")
-                .put("/isbn/{isbn}")
+        given().put(PATH_BOOK_BY_ISBN, TEST_ISBN)
                 .then()
                 .statusCode(200)
                 .log().body(true)
                 .body("title", equalTo("The Lord of the Rings"))
                 .body("authors[0]", equalTo("J.R.R. Tolkien"))
                 .body("languages[0]", equalTo("en"))
-                .body("isbn", equalTo("978-0-618-34399-7"))
+                .body("isbn", equalTo(TEST_ISBN))
                 .body("publishYear", equalTo(2003))
                 .body("format", equalTo("HARDCOVER"))
                 .body("publisher", equalTo("Houghton Mifflin Company"))
@@ -115,22 +120,18 @@ class BookResourceTest {
 
     @Test
     void findByIsbnShouldReturnImportedBook() {
-        String isbn = "978-0-618-34399-7";
-
-        given().pathParam("isbn", isbn)
-                .put("/isbn/{isbn}")
+        given().put(PATH_BOOK_BY_ISBN, TEST_ISBN)
                 .then()
                 .statusCode(200);
 
-        given().pathParam("isbn", isbn)
-                .get("/isbn/{isbn}")
+        given().get(PATH_BOOK_BY_ISBN, TEST_ISBN)
                 .then()
                 .statusCode(200)
                 .log().body(true)
                 .body("title", equalTo("The Lord of the Rings"))
                 .body("authors[0]", equalTo("J.R.R. Tolkien"))
                 .body("languages[0]", equalTo("en"))
-                .body("isbn", equalTo("978-0-618-34399-7"))
+                .body("isbn", equalTo(TEST_ISBN))
                 .body("publishYear", equalTo(2003))
                 .body("format", equalTo("HARDCOVER"))
                 .body("publisher", equalTo("Houghton Mifflin Company"))
@@ -140,8 +141,7 @@ class BookResourceTest {
 
     @Test
     void findByIsbnShouldReturn400ForInvalidIsbn() {
-        given().pathParam("isbn", "978-0-618-34399-9")
-                .get("/isbn/{isbn}")
+        given().get(PATH_BOOK_BY_ISBN, "978-0-618-34399-9")
                 .then()
                 .statusCode(400)
                 .body("type", equalTo("IllegalArgumentException"));
@@ -149,8 +149,45 @@ class BookResourceTest {
 
     @Test
     void findByIsbnShouldReturn404ForUnknownIsbn() {
-        given().pathParam("isbn", "9780385472579")
-                .get("/isbn/{isbn}")
+        given().get(PATH_BOOK_BY_ISBN, "9780385472579")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void getBookByIdShouldReturnImportedBook() {
+        Book book = given().put(PATH_BOOK_BY_ISBN, TEST_ISBN)
+                .then()
+                .statusCode(200)
+                .extract().body().as(Book.class);
+
+        given().get(PATH_BOOK_BY_ID, book.id())
+                .then()
+                .statusCode(200)
+                .log().body(true)
+                .body("title", equalTo("The Lord of the Rings"))
+                .body("authors[0]", equalTo("J.R.R. Tolkien"))
+                .body("languages[0]", equalTo("en"))
+                .body("isbn", equalTo(TEST_ISBN))
+                .body("publishYear", equalTo(2003))
+                .body("format", equalTo("HARDCOVER"))
+                .body("publisher", equalTo("Houghton Mifflin Company"))
+                .body("coverId", equalTo("14627570"))
+                .body("edition", equalTo("Movie tie-in edition (1)"));
+    }
+
+    @Test
+    void getBookByIdShouldReturn404ForUnknownId() {
+        given().pathParam("id", "00000000-0000-0000-0000-000000000000")
+                .get(PATH_BOOK_BY_ID)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void getBookByIdShouldReturn404ForInvalidPathParam() {
+        given().pathParam("id", "invalid-uuid")
+                .get(PATH_BOOK_BY_ID)
                 .then()
                 .statusCode(404);
     }
