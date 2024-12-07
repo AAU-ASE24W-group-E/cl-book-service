@@ -16,6 +16,12 @@ quarkus:
       url: "https://openlibrary.org"
       follow-redirects: true
 
+  # see https://quarkus.io/guides/container-image#customizing
+  container-image:
+    group: "AAU-ASE24W-group-E"
+    registry: "ghcr.io"
+
+  # see https://quarkus.io/guides/logging#configuration
   log:
     level: INFO
     min-level: TRACE
