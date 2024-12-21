@@ -191,4 +191,52 @@ class BookResourceTest {
                 .then()
                 .statusCode(404);
     }
+
+    @Test
+    void findBookByTitleAndAuthor() {
+        given().put(PATH_BOOK_BY_ISBN, TEST_ISBN)
+                .then()
+                .statusCode(200);
+
+        given().queryParam("title", "The Lord of the Rings")
+                .queryParam("author", "J.R.R. Tolkien")
+                .get(PATH_BOOK)
+                .then()
+                .log().all(true)
+                .statusCode(200)
+                .body("size()", equalTo(1))
+                .body("[0].title", equalTo("The Lord of the Rings"))
+                .body("[0].authors[0]", equalTo("J.R.R. Tolkien"));
+    }
+
+    @Test
+    void findBookByTitleOnly() {
+        given().put(PATH_BOOK_BY_ISBN, TEST_ISBN)
+                .then()
+                .statusCode(200);
+
+        given().queryParam("title", "lord of the rings")
+                .get(PATH_BOOK)
+                .then()
+                .log().all(true)
+                .statusCode(200)
+                .body("size()", equalTo(1))
+                .body("[0].title", equalTo("The Lord of the Rings"));
+    }
+
+    @Test
+    void findBookByAuthorOnly() {
+        given().put(PATH_BOOK_BY_ISBN, TEST_ISBN)
+                .then()
+                .statusCode(200);
+
+        given().queryParam("author", "Tolkien")
+                .get(PATH_BOOK)
+                .then()
+                .log().all(true)
+                .statusCode(200)
+                .body("size()", equalTo(1))
+                .body("[0].authors[0]", equalTo("J.R.R. Tolkien"));
+    }
+
 }

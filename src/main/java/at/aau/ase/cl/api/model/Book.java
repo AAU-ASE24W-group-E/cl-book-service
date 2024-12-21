@@ -23,6 +23,7 @@ public record Book(
 
     @Schema(description = "Languages of the book as IETF BCP 47 language tags")
     @NotNull
+    @Size(min = 1)
     List<@Size(min = 2, max = 10) String> languages,
 
     BookFormat format,
@@ -36,6 +37,8 @@ public record Book(
     String edition,
 
     @Schema(description = "List of authors of the book")
-    List<String> authors
+    @NotNull
+    @Size(min = 1)
+    List<@Size(min = 2) String> authors
 ) {
 }
