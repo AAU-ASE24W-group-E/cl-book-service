@@ -1,7 +1,6 @@
 package at.aau.ase.cl.mapper;
 
 import at.aau.ase.cl.api.model.OwnBook;
-import at.aau.ase.cl.domain.BookOwnerEntity;
 import at.aau.ase.cl.domain.BookOwnershipEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,7 +17,7 @@ public interface OwnBookMapper {
     @Mapping(target = "bookId", source = "bookId")
     BookOwnershipEntity map(UUID ownerId, UUID bookId, OwnBook src);
 
-    OwnBook map(BookOwnerEntity src);
+    OwnBook map(BookOwnershipEntity src);
 
-    List<OwnBook> map(List<BookOwnerEntity> src);
+    List<OwnBook> map(List<BookOwnershipEntity> src);
 }

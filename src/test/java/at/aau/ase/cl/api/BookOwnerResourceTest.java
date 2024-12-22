@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 @QuarkusTest
@@ -50,14 +51,19 @@ class BookOwnerResourceTest {
     }
 
     @Test
-    void updateBookOwnerShouldAddNewBookForNewUser() {
+    void createBookOwnerShouldAddNewBookForNewUser() {
         UUID ownerId = UUID.randomUUID();
         UUID bookId = createTestBook().id();
         given().contentType(ContentType.JSON)
-                .body(new OwnBook(UUID.randomUUID(), UUID.randomUUID(), false, false, false, BookStatus.AVAILABLE))
-                .put(PATH_BOOK_OWNER_BOOK, ownerId, bookId)
+                .post(PATH_BOOK_OWNER_BOOK, ownerId, bookId)
                 .then()
-                .statusCode(204);
+                .statusCode(200)
+                .body("ownerId", equalTo(ownerId.toString()))
+                .body("bookId", equalTo(bookId.toString()))
+                .body("lendable", equalTo(false))
+                .body("giftable", equalTo(false))
+                .body("exchangable", equalTo(false))
+                .body("status", equalTo("UNAVAILABLE"));
     }
 
     @Test
@@ -66,10 +72,9 @@ class BookOwnerResourceTest {
         UUID bookId = createTestBook().id();
 
         given().contentType(ContentType.JSON)
-                .body(new OwnBook(ownerId, bookId, false, false, false, BookStatus.AVAILABLE))
-                .put(PATH_BOOK_OWNER_BOOK, ownerId, bookId)
+                .post(PATH_BOOK_OWNER_BOOK, ownerId, bookId)
                 .then()
-                .statusCode(204);
+                .statusCode(200);
 
         given().contentType(ContentType.JSON)
                 .body(new OwnBook(ownerId, bookId, true, true, true, BookStatus.AVAILABLE))
@@ -79,7 +84,17 @@ class BookOwnerResourceTest {
     }
 
     @Test
-    void updateBookOwnerShouldReturn404IfBookNotFound() {
+    void createBookOwnerShouldReturn404IfBookNotFound() {
+        UUID ownerId = UUID.randomUUID();
+        UUID bookId = UUID.randomUUID();
+        given().contentType(ContentType.JSON)
+                .post(PATH_BOOK_OWNER_BOOK, ownerId, bookId)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void updateBookOwnerShouldReturn404IfOwnBookNotFound() {
         UUID ownerId = UUID.randomUUID();
         UUID bookId = UUID.randomUUID();
         given().contentType(ContentType.JSON)

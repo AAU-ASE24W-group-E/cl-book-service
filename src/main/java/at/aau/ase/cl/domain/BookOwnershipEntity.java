@@ -43,7 +43,7 @@ public class BookOwnershipEntity extends PanacheEntityBase {
     public boolean exchangable;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 10)
+    @Column(length = 16)
     public BookStatus status;
 
     public static BookOwnershipEntity findByOwnerAndBook(UUID ownerId, UUID bookId) {

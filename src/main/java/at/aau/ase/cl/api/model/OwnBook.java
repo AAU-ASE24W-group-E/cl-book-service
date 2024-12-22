@@ -1,6 +1,5 @@
 package at.aau.ase.cl.api.model;
 
-import jakarta.validation.constraints.NotNull;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.util.UUID;
@@ -21,7 +20,7 @@ public record OwnBook(
         @Schema(description = "Whether the book can be exchanged with other users", defaultValue = "false")
         boolean exchangable,
 
-        @NotNull
+        @Schema(readOnly = true, description = "Current status of the book")
         BookStatus status
 ) {
 }
