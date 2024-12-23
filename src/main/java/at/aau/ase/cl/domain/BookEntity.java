@@ -3,6 +3,7 @@ package at.aau.ase.cl.domain;
 import at.aau.ase.cl.api.model.BookFormat;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.logging.Log;
+import io.quarkus.panache.common.Sort;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -15,7 +16,10 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -55,5 +59,37 @@ public class BookEntity extends PanacheEntityBase {
         BookEntity book = find("isbn.number", isbn.toLong()).firstResult();
         Log.debugf("findBook by isbn %s -> %s", isbn, book);
         return book;
+    }
+
+    public static List<BookEntity> findByTitleAndAuthor(String title, String author, int maxResults) {
+        String titleCriterion = prepareCriterion(title);
+        String authorCriterion = prepareCriterion(author);
+        List<String> criteria = new LinkedList<>();
+        Map<String, Object> params = new HashMap<>();
+        if (titleCriterion != null) {
+            criteria.add("title ilike :title");
+            params.put("title", titleCriterion);
+        }
+        if (authorCriterion != null) {
+            criteria.add("element(authors).name ilike :author");
+            params.put("author", authorCriterion);
+        }
+        if (criteria.isEmpty()) {
+            return List.of();
+        }
+        String ql = String.join(" and ", criteria);
+        var query = find(ql, Sort.by("title"), params);
+        query = query.range(0, maxResults);
+        return query.list();
+    }
+
+    static String prepareCriterion(String criterion) {
+        if (criterion == null || criterion.isBlank()) {
+            return null;
+        }
+        String trimmed = criterion.trim();
+        // instead of escaping %, we replace it with _ to match it as single character
+        String escaped = trimmed.replace('%', '_');
+        return "%" + escaped + "%";
     }
 }

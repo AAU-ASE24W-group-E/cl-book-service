@@ -10,9 +10,11 @@ import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -101,5 +103,13 @@ public class BookService {
             throw new NotFoundException("Book with isbn " + isbn + " not found");
         }
         return book;
+    }
+
+    @Transactional
+    public List<BookEntity> findBooks(String title, String author, int maxResults) {
+        if (title == null && author == null) {
+            throw new BadRequestException("At least one of title or author must be provided");
+        }
+        return BookEntity.findByTitleAndAuthor(title, author, maxResults);
     }
 }

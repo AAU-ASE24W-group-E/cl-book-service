@@ -18,6 +18,8 @@ public interface BookMapper {
 
     Book map(BookEntity bookEntity);
 
+    List<Book> map(List<BookEntity> bookEntities);
+
     default ISBN mapIsbn(String isbn) {
         if (isbn == null || isbn.isBlank()) {
             return null;

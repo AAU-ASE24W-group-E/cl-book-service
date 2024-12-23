@@ -38,6 +38,10 @@ quarkus:
       logging:
         scope: request-response
         body-limit: 16384
+    log:
+      category:
+        "org.hibernate.SQL":
+          level: DEBUG
 
 "%dev":
   quarkus:
