@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -51,8 +52,10 @@ public class BookEntity extends PanacheEntityBase {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "book_authoring",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id"))
+            joinColumns = @JoinColumn(name = "book_id",
+                    foreignKey = @ForeignKey(name = "fk_book_authoring_book_id")),
+            inverseJoinColumns = @JoinColumn(name = "author_id",
+                    foreignKey = @ForeignKey(name = "fk_book_authoring_author_id")))
     public List<AuthorEntity> authors;
 
     public static BookEntity findByIsbn(ISBN isbn) {

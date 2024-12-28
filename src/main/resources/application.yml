@@ -8,6 +8,15 @@ quarkus:
       generation: none
     physical-naming-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 
+  # see https://quarkus.io/guides/flyway
+  flyway:
+    enabled: true
+    table: "book_schema_history"
+    clean-disabled: true
+    baseline-version: "0.0.1"
+    baseline-at-start: true
+    migrate-at-start: true
+
   rest-client:
     logging:
       scope: request-response
@@ -16,6 +25,20 @@ quarkus:
       url: "https://openlibrary.org"
       follow-redirects: true
 
+  # see https://quarkus.io/guides/openapi-swaggerui
+  smallrye-openapi:
+    store-schema-directory: "target/openapi"
+    store-schema-file-name: "book-service.yaml"
+  swagger-ui:
+    always-include: true
+    path: "/docs"
+    query-config-enabled: true
+
+  # see https://quarkus.io/guides/container-image#customizing
+  container-image:
+    group: "AAU-ASE24W-group-E"
+
+  # see https://quarkus.io/guides/logging#configuration
   log:
     level: INFO
     min-level: TRACE
@@ -31,9 +54,17 @@ quarkus:
       devservices:
         enabled: true
         reuse: false
+# uncomment to test with local database instead of devservices
+#      username: "crowd-library"
+#      password: "crowd-library"
+#      jdbc:
+#        url: "jdbc:postgresql://localhost:5432/crowd-library"
     hibernate-orm:
       database:
         generation: drop-and-create
+    flyway:
+      # in %test we drop-and-create the database, thus, migration is neither needed nor possible
+      migrate-at-start: false
     rest-client:
       logging:
         scope: request-response
