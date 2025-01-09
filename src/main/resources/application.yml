@@ -80,10 +80,10 @@ quarkus:
       devservices:
         enabled: true
         reuse: true
-      username: "crowd-library"
-      password: "crowd-library"
-      jdbc:
-        url: "jdbc:postgresql://localhost:5432/crowd-library"
+      #username: "crowd-library"
+      #password: "crowd-library"
+      #jdbc:
+      #  url: "jdbc:postgresql://localhost:5432/crowd-library"
     hibernate-orm:
       database:
         generation: drop-and-create
