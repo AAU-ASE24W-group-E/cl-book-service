@@ -19,13 +19,13 @@ class AvailableBooksSearchCriteriaTest {
     @Test
     void parseQuickSearchShouldIgnoreNull() {
         model.parseQuickSearch(null);
-        assertNull(model.quickSearchTerms);
+        assertEquals(List.of(), model.quickSearchTerms);
     }
 
     @Test
     void parseQuickSearchShouldIgnoreWhitespace() {
         model.parseQuickSearch(" \t\n");
-        assertNull(model.quickSearchTerms);
+        assertEquals(List.of(), model.quickSearchTerms);
     }
 
     @Test
