@@ -2,8 +2,11 @@
 quarkus:
   datasource:
     db-kind: "postgresql"
+    devservices:
+      image-name: "postgis/postgis:17-3.5-alpine"
 
   hibernate-orm:
+#    dialect:
     database:
       generation: none
     physical-naming-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
@@ -52,18 +55,19 @@ quarkus:
   quarkus:
     datasource:
       devservices:
-        enabled: true
         reuse: false
-# uncomment to test with local database instead of devservices
-#      username: "crowd-library"
-#      password: "crowd-library"
-#      jdbc:
-#        url: "jdbc:postgresql://localhost:5432/crowd-library"
+        enabled: false
+    # uncomment to test with local database instead of devservices
+      username: "crowd-library"
+      password: "crowd-library"
+      jdbc:
+        url: "jdbc:postgresql://localhost:5432/crowd-library"
     hibernate-orm:
       database:
         generation: drop-and-create
     flyway:
       # in %test we drop-and-create the database, thus, migration is neither needed nor possible
+      enabled: false
       migrate-at-start: false
     rest-client:
       logging:
@@ -73,17 +77,24 @@ quarkus:
       category:
         "org.hibernate.SQL":
           level: DEBUG
+        "org.hibernate":
+          level: INFO
 
 "%dev":
   quarkus:
     datasource:
       devservices:
-        enabled: true
         reuse: true
+        enabled: false
+      # uncomment to test with local database instead of devservices
       username: "crowd-library"
       password: "crowd-library"
       jdbc:
         url: "jdbc:postgresql://localhost:5432/crowd-library"
     hibernate-orm:
       database:
-        generation: drop-and-create
+        generation: none
+    http:
+      access-log:
+        enabled: true
+        exclude-pattern: "/q/.*|/docs.*"

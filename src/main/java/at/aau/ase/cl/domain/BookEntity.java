@@ -65,17 +65,17 @@ public class BookEntity extends PanacheEntityBase {
     }
 
     public static List<BookEntity> findByTitleAndAuthor(String title, String author, int maxResults) {
-        String titleCriterion = prepareCriterion(title);
-        String authorCriterion = prepareCriterion(author);
+        var titleCriterion = new WildcardCriterion(title);
+        var authorCriterion = new WildcardCriterion(author);
         List<String> criteria = new LinkedList<>();
         Map<String, Object> params = new HashMap<>();
-        if (titleCriterion != null) {
+        if (titleCriterion.isPresent()) {
             criteria.add("title ilike :title");
-            params.put("title", titleCriterion);
+            params.put("title", titleCriterion.prepare());
         }
-        if (authorCriterion != null) {
+        if (authorCriterion.isPresent()) {
             criteria.add("element(authors).name ilike :author");
-            params.put("author", authorCriterion);
+            params.put("author", authorCriterion.prepare());
         }
         if (criteria.isEmpty()) {
             return List.of();
@@ -86,13 +86,4 @@ public class BookEntity extends PanacheEntityBase {
         return query.list();
     }
 
-    static String prepareCriterion(String criterion) {
-        if (criterion == null || criterion.isBlank()) {
-            return null;
-        }
-        String trimmed = criterion.trim();
-        // instead of escaping %, we replace it with _ to match it as single character
-        String escaped = trimmed.replace('%', '_');
-        return "%" + escaped + "%";
-    }
 }

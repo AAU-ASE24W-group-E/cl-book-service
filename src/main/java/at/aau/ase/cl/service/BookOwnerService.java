@@ -4,6 +4,7 @@ import at.aau.ase.cl.api.model.BookStatus;
 import at.aau.ase.cl.domain.BookEntity;
 import at.aau.ase.cl.domain.BookOwnerEntity;
 import at.aau.ase.cl.domain.BookOwnershipEntity;
+import at.aau.ase.cl.mapper.OwnBookMapper;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -13,6 +14,19 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class BookOwnerService {
+    @Transactional
+    public void updateBookOwner(BookOwnerEntity owner) {
+        BookOwnerEntity entity = BookOwnerEntity.findById(owner.id);
+        if (entity == null) {
+            owner.persistAndFlush();
+            Log.debugf("Creating new owner %s", owner.id);
+        } else {
+            // update writable fields
+            entity.name = owner.name;
+            entity.location = owner.location;
+            Log.debugf("Updating owner %s", owner.id);
+        }
+    }
 
     @Transactional
     public void updateBookOwnership(BookOwnershipEntity ownBook) {
@@ -21,9 +35,7 @@ public class BookOwnerService {
             throw new NotFoundException("Ownership not found");
         }
         // update writable fields
-        entity.lendable = ownBook.lendable;
-        entity.giftable = ownBook.giftable;
-        entity.exchangable = ownBook.exchangable;
+        OwnBookMapper.INSTANCE.update(ownBook, entity);
         Log.debugf("Updating ownership of book %s by user %s", ownBook.bookId, ownBook.ownerId);
     }
 
