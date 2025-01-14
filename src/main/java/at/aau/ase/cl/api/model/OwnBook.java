@@ -20,7 +20,7 @@ public record OwnBook(
         @Schema(description = "Whether the book can be exchanged with other users", defaultValue = "false")
         boolean exchangable,
 
-        @Schema(readOnly = true, description = "Current status of the book")
+        @Schema(description = "Current status of the book")
         BookStatus status
 ) {
 }

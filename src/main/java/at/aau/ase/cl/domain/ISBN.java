@@ -42,6 +42,15 @@ public class ISBN {
         };
     }
 
+    public static boolean isValidIsbn(String isbn) {
+        var num = stripSeparators(isbn);
+        return switch (num.length()) {
+            case 10 -> calculateIsbn10ChecksumRemainder(num) != 0;
+            case 13 -> calculateIsbn13ChecksumRemainder(num) != 0;
+            default -> false;
+        };
+    }
+
     static String stripSeparators(String isbn) {
         return isbn.replaceAll("[^0-9X]+", "");
     }
@@ -60,6 +69,14 @@ public class ISBN {
         if (isbn10.length() != 10) {
             throw new IllegalArgumentException("Invalid ISBN-10 length: " + isbn10.length());
         }
+        int remainder = calculateIsbn10ChecksumRemainder(isbn10);
+        if (remainder != 0) {
+            Log.debugf("Invalid ISBN-10 checksum: %s (remainder: %d)", isbn10, remainder);
+            throw new IllegalArgumentException("Invalid ISBN-10 checksum: " + isbn10);
+        }
+    }
+
+    static int calculateIsbn10ChecksumRemainder(String isbn10) {
         char[] digits = isbn10.toCharArray();
         int sum = 0;
         for (int i = 0; i < digits.length; i++) {
@@ -67,11 +84,7 @@ public class ISBN {
             int d = digits[i] == 'X' ? 10 : digits[i] - '0';
             sum += w * d;
         }
-        int remainder = sum % 11;
-        if (remainder != 0) {
-            Log.debugf("Invalid ISBN-10 checksum: %s (remainder: %d)", isbn10, remainder);
-            throw new IllegalArgumentException("Invalid ISBN-10 checksum: " + isbn10);
-        }
+        return sum % 11;
     }
 
     static void validateIsbn13(String isbn13) {

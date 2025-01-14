@@ -1,7 +1,9 @@
 package at.aau.ase.cl.api;
 
+import at.aau.ase.cl.api.model.BookOwner;
 import at.aau.ase.cl.api.model.OwnBook;
 import at.aau.ase.cl.domain.BookOwnershipEntity;
+import at.aau.ase.cl.mapper.BookOwnerMapper;
 import at.aau.ase.cl.mapper.OwnBookMapper;
 import at.aau.ase.cl.service.BookOwnerService;
 import jakarta.inject.Inject;
@@ -27,6 +29,17 @@ public class BookOwnerResource {
     @Inject
     BookOwnerService service;
 
+    @PUT
+    @Path("book-owner/{ownerId}")
+    @APIResponse(responseCode = "204", description = "Updated")
+    @APIResponse(responseCode = "400", description = "Bad Request")
+    public Response updateBookOwner(@PathParam("ownerId") UUID ownerId,
+                                    @RequestBody BookOwner bookOwner) {
+        var model = BookOwnerMapper.INSTANCE.map(ownerId, bookOwner);
+        service.updateBookOwner(model);
+        return Response.noContent().build();
+    }
+
     @POST
     @Path("book-owner/{ownerId}/book/{bookId}")
     @APIResponse(responseCode = "200", description = "OK", content = {
@@ -45,9 +58,9 @@ public class BookOwnerResource {
     @APIResponse(responseCode = "204", description = "Updated")
     @APIResponse(responseCode = "400", description = "Bad Request")
     @APIResponse(responseCode = "404", description = "Not Found")
-    public Response updateBookOwner(@PathParam("ownerId") UUID ownerId,
-                                    @PathParam("bookId") UUID bookId,
-                                    @RequestBody OwnBook ownBook) {
+    public Response updateBookOwnership(@PathParam("ownerId") UUID ownerId,
+                                        @PathParam("bookId") UUID bookId,
+                                        @RequestBody OwnBook ownBook) {
         var model = OwnBookMapper.INSTANCE.map(ownerId, bookId, ownBook);
         service.updateBookOwnership(model);
         return Response.noContent().build();
