@@ -70,4 +70,9 @@ public class BookOwnerService {
 
         return entity;
     }
+
+    @Transactional
+    public BookOwnerEntity getBookOwner(UUID id) {
+        return BookOwnerEntity.findById(id);
+    }
 }

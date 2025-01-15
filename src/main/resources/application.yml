@@ -51,6 +51,26 @@ quarkus:
       "org.jboss.resteasy.reactive.client.logging":
         level: DEBUG
 
+# see https://quarkus.io/guides/kafka#sending-messages-to-kafka
+mp:
+  messaging:
+    incoming:
+      user:
+        connector: "smallrye-kafka"
+        topic: "cl.user"
+        key:
+          deserializer: org.apache.kafka.common.serialization.UUIDDeserializer
+        value:
+          deserializer: at.aau.ase.cl.event.UserEventDeserializer
+        group:
+          id: book-service
+
+"%prod":
+  kafka:
+    bootstrap:
+      servers: "kafka:9092"
+
+
 "%test":
   quarkus:
     datasource:
