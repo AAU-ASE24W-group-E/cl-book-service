@@ -105,12 +105,12 @@ mp:
     datasource:
       devservices:
         reuse: true
-        enabled: false
+        enabled: true
       # uncomment to test with local database instead of devservices
-      #username: "crowd-library"
-      #password: "crowd-library"
-      #jdbc:
-      #  url: "jdbc:postgresql://localhost:5432/crowd-library"
+#      username: "crowd-library"
+#      password: "crowd-library"
+#      jdbc:
+#        url: "jdbc:postgresql://localhost:5432/crowd-library"
     hibernate-orm:
       database:
         generation: none
