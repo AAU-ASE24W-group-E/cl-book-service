@@ -1,6 +1,8 @@
 package at.aau.ase.cl.api;
 
 import at.aau.ase.cl.api.model.Book;
+import at.aau.ase.cl.api.model.BookFormat;
+import at.aau.ase.cl.api.model.BookSortingProperty;
 import at.aau.ase.cl.api.model.BookStatus;
 import at.aau.ase.cl.api.model.OwnBook;
 import at.aau.ase.cl.client.openlibrary.OpenLibraryClient;
@@ -13,6 +15,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.*;
@@ -108,7 +112,7 @@ class BookOwnerResourceTest {
     }
 
     @Test
-    void getOwnBooksShouldReturnAllBooksOfOwner() {
+    void getOwnBooksShouldReturnOwnedBooks() {
         UUID ownerId = UUID.randomUUID();
         var book = createTestBook();
 
@@ -143,4 +147,95 @@ class BookOwnerResourceTest {
                 .statusCode(200)
                 .body("size()", equalTo(0));
     }
+
+    @Test
+    void getOwnBookShouldReturnAllBooksSortedAccordingCriteria() {
+        UUID ownerId = UUID.randomUUID();
+        var books = createDummyBooks(5);
+
+        books.forEach(b -> given().contentType(ContentType.JSON)
+                .post(PATH_BOOK_OWNER_BOOK_ID, ownerId, b.id())
+                .then()
+                .statusCode(200));
+
+        given().queryParam("sort", BookSortingProperty.YEAR)
+                .get(PATH_BOOK_OWNER_BOOK, ownerId)
+                .then()
+                .statusCode(200)
+                .body("size()", equalTo(5))
+                .body("[0].book.publishYear", equalTo(2000))
+                .body("[4].book.publishYear", equalTo(2004));
+        given().queryParam("sort", BookSortingProperty.YEAR)
+                .queryParam("desc", true)
+                .get(PATH_BOOK_OWNER_BOOK, ownerId)
+                .then()
+                .statusCode(200)
+                .body("size()", equalTo(5))
+                .body("[0].book.publishYear", equalTo(2004))
+                .body("[4].book.publishYear", equalTo(2000));
+
+        given()
+                .get(PATH_BOOK_OWNER_BOOK, ownerId)
+                .then()
+                .statusCode(200)
+                .body("size()", equalTo(5))
+                .body("[0].book.title", equalTo("Dummy Title0"))
+                .body("[4].book.title", equalTo("Dummy Title4"));
+        given()
+                .queryParam("desc", true)
+                .get(PATH_BOOK_OWNER_BOOK, ownerId)
+                .then()
+                .statusCode(200)
+                .body("size()", equalTo(5))
+                .body("[0].book.title", equalTo("Dummy Title4"))
+                .body("[4].book.title", equalTo("Dummy Title0"));
+
+        given()
+                .queryParam("sort", BookSortingProperty.TITLE)
+                .get(PATH_BOOK_OWNER_BOOK, ownerId)
+                .then()
+                .statusCode(200)
+                .body("size()", equalTo(5))
+                .body("[0].book.title", equalTo("Dummy Title0"))
+                .body("[4].book.title", equalTo("Dummy Title4"));
+        given()
+                .queryParam("sort", BookSortingProperty.TITLE)
+                .queryParam("desc", true)
+                .get(PATH_BOOK_OWNER_BOOK, ownerId)
+                .then()
+                .statusCode(200)
+                .body("size()", equalTo(5))
+                .body("[0].book.title", equalTo("Dummy Title4"))
+                .body("[4].book.title", equalTo("Dummy Title0"));
+    }
+
+    List<Book> createDummyBooks(int count) {
+        List<Book> books = new ArrayList<>(count);
+
+        for(int i = 0; i < count; i++) {
+            books.add(given()
+                    .contentType(ContentType.JSON)
+                    .body(new Book(null,
+                            "Dummy Title" + i,
+                            generateIsbn(i),
+                            List.of("en"),
+                            BookFormat.values()[i % BookFormat.values().length],
+                            "Dummy Publisher",
+                            2000 + i,
+                            "dummy" + i,
+                            "Dummy Edition",
+                            List.of("Dummy Author" + i)))
+                    .post("/book")
+                    .then()
+                    .statusCode(200)
+                    .extract().as(Book.class));
+        }
+        return books;
+    }
+
+    String generateIsbn(int seed) {
+        String[] dummy = {"978-7-7762-1477-0", "978-4-8875-8155-5", "978-4-6684-3921-1", "978-4-7554-9982-1", "978-6-7493-6049-0"};
+        return dummy[seed % dummy.length];
+    }
+
 }

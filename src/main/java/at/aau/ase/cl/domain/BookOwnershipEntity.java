@@ -187,7 +187,6 @@ public class BookOwnershipEntity extends PanacheEntityBase {
         Sort sort = switch (sortBy) {
             case null -> Sort.by("book.title", dir);
             case TITLE -> Sort.by("book.title", dir);
-            case AUTHOR -> Sort.by("book.authors.name", dir);
             case YEAR -> Sort.by("book.publishYear", dir);
             case STATUS -> Sort.by("status", dir);
             default -> {
