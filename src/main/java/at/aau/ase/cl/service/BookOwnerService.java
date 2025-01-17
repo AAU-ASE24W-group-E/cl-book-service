@@ -1,5 +1,6 @@
 package at.aau.ase.cl.service;
 
+import at.aau.ase.cl.api.model.BookSortingProperty;
 import at.aau.ase.cl.api.model.BookStatus;
 import at.aau.ase.cl.domain.BookEntity;
 import at.aau.ase.cl.domain.BookOwnerEntity;
@@ -10,6 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
+import java.util.List;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -74,5 +76,10 @@ public class BookOwnerService {
     @Transactional
     public BookOwnerEntity getBookOwner(UUID id) {
         return BookOwnerEntity.findById(id);
+    }
+
+    @Transactional
+    public List<BookOwnershipEntity> getOwnBooks(UUID ownerId, BookSortingProperty sort, Boolean descending) {
+        return BookOwnershipEntity.findByOwner(ownerId, sort, descending);
     }
 }

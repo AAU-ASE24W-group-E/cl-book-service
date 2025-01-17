@@ -8,8 +8,8 @@ public record OwnBook(
         @Schema(readOnly = true, description = "The user ID of the owner of the book")
         UUID ownerId,
 
-        @Schema(readOnly = true, description = "The ID of the book")
-        UUID bookId,
+        @Schema(readOnly = true, description = "The book")
+        Book book,
 
         @Schema(description = "Whether the book can be lent to other users", defaultValue = "false")
         boolean lendable,
@@ -23,4 +23,7 @@ public record OwnBook(
         @Schema(description = "Current status of the book")
         BookStatus status
 ) {
+    public OwnBook(boolean lendable, boolean giftable, boolean exchangable, BookStatus status) {
+        this(null, null, lendable, giftable, exchangable, status);
+    }
 }

@@ -21,7 +21,8 @@ import static org.mockito.Mockito.*;
 
 @QuarkusTest
 class BookOwnerResourceTest {
-    static final String PATH_BOOK_OWNER_BOOK = "/book-owner/{ownerId}/book/{bookId}";
+    static final String PATH_BOOK_OWNER_BOOK_ID = "/book-owner/{ownerId}/book/{bookId}";
+    static final String PATH_BOOK_OWNER_BOOK = "/book-owner/{ownerId}/book";
 
     static final String TEST_ISBN = "978-0-618-34399-7";
 
@@ -53,13 +54,15 @@ class BookOwnerResourceTest {
     @Test
     void createBookOwnerShouldAddNewBookForNewUser() {
         UUID ownerId = UUID.randomUUID();
-        UUID bookId = createTestBook().id();
+        var book = createTestBook();
         given().contentType(ContentType.JSON)
-                .post(PATH_BOOK_OWNER_BOOK, ownerId, bookId)
+                .post(PATH_BOOK_OWNER_BOOK_ID, ownerId, book.id())
                 .then()
                 .statusCode(200)
                 .body("ownerId", equalTo(ownerId.toString()))
-                .body("bookId", equalTo(bookId.toString()))
+                .body("book.id", equalTo(book.id().toString()))
+                .body("book.isbn", equalTo(book.isbn()))
+                .body("book.title", equalTo(book.title()))
                 .body("lendable", equalTo(false))
                 .body("giftable", equalTo(false))
                 .body("exchangable", equalTo(false))
@@ -72,13 +75,13 @@ class BookOwnerResourceTest {
         UUID bookId = createTestBook().id();
 
         given().contentType(ContentType.JSON)
-                .post(PATH_BOOK_OWNER_BOOK, ownerId, bookId)
+                .post(PATH_BOOK_OWNER_BOOK_ID, ownerId, bookId)
                 .then()
                 .statusCode(200);
 
         given().contentType(ContentType.JSON)
-                .body(new OwnBook(ownerId, bookId, true, true, true, BookStatus.AVAILABLE))
-                .put(PATH_BOOK_OWNER_BOOK, ownerId, bookId)
+                .body(new OwnBook(ownerId, null, true, true, true, BookStatus.AVAILABLE))
+                .put(PATH_BOOK_OWNER_BOOK_ID, ownerId, bookId)
                 .then()
                 .statusCode(204);
     }
@@ -88,7 +91,7 @@ class BookOwnerResourceTest {
         UUID ownerId = UUID.randomUUID();
         UUID bookId = UUID.randomUUID();
         given().contentType(ContentType.JSON)
-                .post(PATH_BOOK_OWNER_BOOK, ownerId, bookId)
+                .post(PATH_BOOK_OWNER_BOOK_ID, ownerId, bookId)
                 .then()
                 .statusCode(404);
     }
@@ -98,9 +101,46 @@ class BookOwnerResourceTest {
         UUID ownerId = UUID.randomUUID();
         UUID bookId = UUID.randomUUID();
         given().contentType(ContentType.JSON)
-                .body(new OwnBook(ownerId, bookId, false, false, false, BookStatus.AVAILABLE))
-                .put(PATH_BOOK_OWNER_BOOK, ownerId, bookId)
+                .body(new OwnBook(null, null, false, false, false, BookStatus.AVAILABLE))
+                .put(PATH_BOOK_OWNER_BOOK_ID, ownerId, bookId)
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    void getOwnBooksShouldReturnAllBooksOfOwner() {
+        UUID ownerId = UUID.randomUUID();
+        var book = createTestBook();
+
+        given().contentType(ContentType.JSON)
+                .post(PATH_BOOK_OWNER_BOOK_ID, ownerId, book.id())
+                .then()
+                .statusCode(200);
+
+        given().get(PATH_BOOK_OWNER_BOOK, ownerId)
+                .then()
+                .statusCode(200)
+                .body("size()", equalTo(1))
+                .body("[0].ownerId", equalTo(ownerId.toString()))
+                .body("[0].book.id", equalTo(book.id().toString()))
+                .body("[0].book.isbn", equalTo(book.isbn()))
+                .body("[0].book.title", equalTo(book.title()))
+                .body("[0].lendable", equalTo(false))
+                .body("[0].giftable", equalTo(false))
+                .body("[0].exchangable", equalTo(false))
+                .body("[0].status", equalTo("UNAVAILABLE"));
+    }
+
+    @Test
+    void getOwnBooksShouldReturnEmptyListIfOwnerHasNoBooks() {
+        UUID ownerId = UUID.randomUUID();
+        createTestBook();
+
+        // book exists, but ownership is not set!
+
+        given().get(PATH_BOOK_OWNER_BOOK, ownerId)
+                .then()
+                .statusCode(200)
+                .body("size()", equalTo(0));
     }
 }

@@ -1,8 +1,11 @@
 package at.aau.ase.cl.domain;
 
+import at.aau.ase.cl.api.model.BookSortingProperty;
 import at.aau.ase.cl.api.model.BookStatus;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import io.quarkus.logging.Log;
+import io.quarkus.panache.common.Sort;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -177,5 +180,21 @@ public class BookOwnershipEntity extends PanacheEntityBase {
             return null;
         }
         return atoms.stream().collect(Collectors.joining(" or ", qlPrefix, qlSuffix));
+    }
+
+    public static List<BookOwnershipEntity> findByOwner(UUID ownerId, BookSortingProperty sortBy, Boolean descending) {
+        Sort.Direction dir = descending != null && descending ? Sort.Direction.Descending : Sort.Direction.Ascending;
+        Sort sort = switch (sortBy) {
+            case null -> Sort.by("book.title", dir);
+            case TITLE -> Sort.by("book.title", dir);
+            case AUTHOR -> Sort.by("book.authors.name", dir);
+            case YEAR -> Sort.by("book.publishYear", dir);
+            case STATUS -> Sort.by("status", dir);
+            default -> {
+                Log.debugf("Unknown sorting property %s, falling back to default", sortBy);
+                yield Sort.by("book.id", dir);
+            }
+        };
+        return find("from BookOwnershipEntity o join fetch o.book where o.owner.id=?1", sort, ownerId).list();
     }
 }
