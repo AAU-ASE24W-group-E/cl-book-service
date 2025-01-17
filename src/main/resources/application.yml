@@ -118,3 +118,6 @@ mp:
       access-log:
         enabled: true
         exclude-pattern: "/q/.*|/docs.*"
+      cors:
+        ~: true
+        origins: "/.*/"
