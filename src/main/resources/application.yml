@@ -121,4 +121,3 @@ mp:
       cors:
         ~: true
         origins: "/.*/"
-
