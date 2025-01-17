@@ -11,7 +11,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.List;
@@ -62,23 +64,34 @@ public class BookService {
             Log.infof("Book with isbn %s already exists: %s", isbnString, book);
             return book;
         }
-        // fetch book
-        var olBook = openLibraryClient.getBookByIsbn(isbn.toPlainString());
-        book = OpenLibraryMapper.INSTANCE.mapBook(olBook);
-        book.isbn = isbn;
-        // fetch authors vis works
-        book.authors = olBook.works().stream()
-                .map(k -> OpenLibraryMapper.INSTANCE.keyToId("works", k))
-                .filter(Objects::nonNull)
-                .map(openLibraryClient::getWorkById)
-                .flatMap(w -> w.authors().stream())
-                .map(this::importAuthor)
-                .filter(Objects::nonNull)
-                .toList();
-        // create book
-        book = createBook(book);
-        Log.infof("Imported book with isbn %s: %s", isbnString, book);
-        return book;
+        try {
+            // fetch book
+            var olBook = openLibraryClient.getBookByIsbn(isbn.toPlainString());
+            book = OpenLibraryMapper.INSTANCE.mapBook(olBook);
+            book.isbn = isbn;
+            // fetch authors vis works
+            book.authors = olBook.works().stream()
+                    .map(k -> OpenLibraryMapper.INSTANCE.keyToId("works", k))
+                    .filter(Objects::nonNull)
+                    .map(openLibraryClient::getWorkById)
+                    .flatMap(w -> w.authors().stream())
+                    .map(this::importAuthor)
+                    .filter(Objects::nonNull)
+                    .toList();
+            // create book
+            book = createBook(book);
+            Log.infof("Imported book with isbn %s: %s", isbnString, book);
+            return book;
+        } catch (WebApplicationException ex) {
+            var errorResponse = ex.getResponse();
+            if (errorResponse != null && errorResponse.getStatus() == 404) {
+                Log.warn("Book with isbn " + isbnString + " not found");
+                throw new NotFoundException("Book with isbn " + isbnString + " not found", ex);
+            } else {
+                Log.error("Failed to fetch book with isbn " + isbnString, ex);
+                throw new InternalServerErrorException(ex);
+            }
+        }
     }
 
     AuthorEntity importAuthor(AuthorKey authorKey) {

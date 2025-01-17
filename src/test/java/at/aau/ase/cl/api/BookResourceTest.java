@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
@@ -25,6 +26,7 @@ class BookResourceTest {
     static final String PATH_BOOK_BY_ISBN = "/book/isbn/{isbn}";
 
     static final String TEST_ISBN = "978-0-618-34399-7";
+    static final String UNKNOWN_ISBN = "978-5-17-166723-8";
     
     @InjectMock
     @RestClient
@@ -35,7 +37,7 @@ class BookResourceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        openLibraryMock.setupClientMock(openLibraryClientMock);
+        openLibraryMock.setupClientMock(openLibraryClientMock, Set.of(TEST_ISBN));
     }
 
     @AfterEach
@@ -103,6 +105,13 @@ class BookResourceTest {
                 .body("coverId", equalTo("14627570"))
                 .body("edition", equalTo("Movie tie-in edition (1)"))
                 .body("id", notNullValue());
+    }
+
+    @Test
+    void importBookByIsbnShouldReturn404ForUnknownIsbn() {
+        given().put(PATH_BOOK_BY_ISBN, UNKNOWN_ISBN)
+                .then()
+                .statusCode(404);
     }
 
     @Test
