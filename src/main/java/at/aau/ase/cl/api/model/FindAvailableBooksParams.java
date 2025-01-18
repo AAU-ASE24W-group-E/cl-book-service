@@ -4,20 +4,23 @@ import at.aau.ase.cl.domain.AvailableBooksSearchCriteria;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.QueryParam;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 public record FindAvailableBooksParams(
-        @Schema(description = "Location to search for available books from in Latitude,Longitude coordinates in the WGS84 geodetic datum."
-                              + "Note the sequence: first Latitude then Longitude, as used by OpenStreetMap or Google Maps.",
-                example = "46.6160474,14.2628435")
-        @Pattern(regexp = "-?\\d{1,3}\\.\\d+,-?\\d{1,2}\\.\\d+")
+        @Schema(description = "Latitude of the location to search for available books from in coordinates in the WGS84 geodetic datum.",
+                examples = "46.6160474")
         @NotNull
-        @QueryParam("location")
-        String location,
+        @QueryParam("latitude")
+        double latitude,
+
+        @Schema(description = "Longitude of the location to search for available books from in coordinates in the WGS84 geodetic datum.",
+                examples = "14.2628435")
+        @NotNull
+        @QueryParam("longitude")
+        double longitude,
 
         @Schema(description = "Distance in km from the location")
         @Min(1)

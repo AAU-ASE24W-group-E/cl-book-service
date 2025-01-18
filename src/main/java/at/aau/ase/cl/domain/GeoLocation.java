@@ -23,16 +23,6 @@ public class GeoLocation {
         point = DSL.point(CRS4326, DSL.g(longitude, latitude));
     }
 
-    public static GeoLocation fromString(String latLonStr) {
-        int delimiterIndex = latLonStr.indexOf(DELIMITER);
-        if (delimiterIndex != -1) {
-            var latitude = Double.parseDouble(latLonStr.substring(0, delimiterIndex));
-            var longitude = Double.parseDouble(latLonStr.substring(delimiterIndex + DELIMITER.length()));
-            return new GeoLocation(latitude, longitude);
-        }
-        throw new IllegalArgumentException("Invalid GeoCoordinates: " + latLonStr);
-    }
-
     public double getLatitude() {
         return point.getPosition().getLat();
     }
