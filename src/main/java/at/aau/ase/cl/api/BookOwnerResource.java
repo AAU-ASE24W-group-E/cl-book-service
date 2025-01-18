@@ -1,6 +1,7 @@
 package at.aau.ase.cl.api;
 
 import at.aau.ase.cl.api.model.BookOwner;
+import at.aau.ase.cl.api.model.BookSortingProperty;
 import at.aau.ase.cl.api.model.OwnBook;
 import at.aau.ase.cl.domain.BookOwnershipEntity;
 import at.aau.ase.cl.mapper.BookOwnerMapper;
@@ -8,13 +9,16 @@ import at.aau.ase.cl.mapper.OwnBookMapper;
 import at.aau.ase.cl.service.BookOwnerService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -38,6 +42,21 @@ public class BookOwnerResource {
         var model = BookOwnerMapper.INSTANCE.map(ownerId, bookOwner);
         service.updateBookOwner(model);
         return Response.noContent().build();
+    }
+
+    @GET
+    @Path("book-owner/{ownerId}/book")
+    @APIResponse(responseCode = "200", description = "OK", content = {
+            @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = OwnBook.class, type = SchemaType.ARRAY))})
+    @APIResponse(responseCode = "400", description = "Bad Request")
+    @APIResponse(responseCode = "404", description = "Not Found")
+    public Response getOwnBooks(@PathParam("ownerId") UUID ownerId,
+                                @QueryParam("sort") BookSortingProperty sort,
+                                @QueryParam("desc") Boolean descending) {
+        var models = service.getOwnBooks(ownerId, sort, descending);
+        var result = OwnBookMapper.INSTANCE.map(models);
+        return Response.ok(result).build();
     }
 
     @POST

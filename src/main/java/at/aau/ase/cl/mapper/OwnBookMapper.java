@@ -21,8 +21,10 @@ public interface OwnBookMapper {
 
     @Mapping(target = "ownerId", source = "ownerId")
     @Mapping(target = "bookId", source = "bookId")
+    @Mapping(target = "book", ignore = true)
     BookOwnershipEntity map(UUID ownerId, UUID bookId, OwnBook src);
 
+    @Mapping(target = "ownerId", source = "owner.id")
     OwnBook map(BookOwnershipEntity src);
 
     List<OwnBook> map(List<BookOwnershipEntity> src);
