@@ -117,7 +117,7 @@ class AvailableBookResourceTest {
 
     OwnBook createBookOwnership(UUID ownerId, UUID bookId) {
         return given().contentType(ContentType.JSON)
-                .body(new OwnBook(ownerId, bookId, false, false, false, BookStatus.UNAVAILABLE))
+                .body(new OwnBook(false, false, false, BookStatus.UNAVAILABLE))
                 .post("/book-owner/{ownerId}/book/{bookId}", ownerId, bookId)
                 .then()
                 .statusCode(200)
@@ -126,7 +126,7 @@ class AvailableBookResourceTest {
 
     void updateBookOwnership(UUID ownerId, UUID bookId, boolean lendable, boolean exchangeable, boolean giftable, BookStatus status) {
         given().contentType(ContentType.JSON)
-                .body(new OwnBook(ownerId, bookId, lendable, giftable, exchangeable, status))
+                .body(new OwnBook(lendable, giftable, exchangeable, status))
                 .put("/book-owner/{ownerId}/book/{bookId}", ownerId, bookId)
                 .then()
                 .statusCode(204);
