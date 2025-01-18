@@ -48,7 +48,8 @@ class AvailableBookResourceTest {
         createBookOwnership(ownerId, book.id());
         updateBookOwnership(ownerId, book.id(), true, false, false, BookStatus.AVAILABLE);
 
-        given().queryParam("location", "46.623962,14.307691")
+        given().queryParam("latitude", 46.623962)
+                .queryParam("longitude", 14.307691)
                 .queryParam("distance", 10)
                 .queryParam("title", "Lord")
                 .queryParam("author", "Tolkien")
@@ -77,7 +78,8 @@ class AvailableBookResourceTest {
         createBookOwnership(ownerId, book.id());
         updateBookOwnership(ownerId, book.id(), true, false, false, BookStatus.AVAILABLE);
 
-        given().queryParam("location", "46.623962,-14.307691")
+        given().queryParam("latitude", 46.623962)
+                .queryParam("longitude", -14.307691)
                 .queryParam("distance", 10)
                 .queryParam("quickSearch", "Tolkien Lord of the Rings " + TEST_ISBN)
                 .queryParam("lendable", true)

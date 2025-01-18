@@ -5,6 +5,7 @@ import at.aau.ase.cl.api.model.FindAvailableBooksParams;
 import at.aau.ase.cl.api.model.FindAvailableBooksResponse;
 import at.aau.ase.cl.domain.AvailableBooksSearchCriteria;
 import at.aau.ase.cl.domain.BookOwnershipEntity;
+import at.aau.ase.cl.mapper.AvailableBookMapper;
 import at.aau.ase.cl.mapper.OwnBookMapper;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,7 +17,7 @@ import java.util.List;
 public class AvailableBookService {
     @Transactional
     public FindAvailableBooksResponse findAvailableBooks(FindAvailableBooksParams params) {
-        AvailableBooksSearchCriteria criteria = OwnBookMapper.INSTANCE.map(params);
+        AvailableBooksSearchCriteria criteria = AvailableBookMapper.INSTANCE.map(params);
         criteria.parseQuickSearch(params.quickSearch());
 
         var entities = BookOwnershipEntity.findAvailableBooks(criteria);
