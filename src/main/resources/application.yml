@@ -115,6 +115,7 @@ mp:
       database:
         generation: none
     http:
+      port: 8082
       access-log:
         enabled: true
         exclude-pattern: "/q/.*|/docs.*"
