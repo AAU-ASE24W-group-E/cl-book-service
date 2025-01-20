@@ -18,12 +18,12 @@ public record OwnBook(
         boolean giftable,
 
         @Schema(description = "Whether the book can be exchanged with other users", defaultValue = "false")
-        boolean exchangable,
+        boolean exchangeable,
 
         @Schema(description = "Current status of the book")
         BookStatus status
 ) {
-    public OwnBook(boolean lendable, boolean giftable, boolean exchangable, BookStatus status) {
-        this(null, null, lendable, giftable, exchangable, status);
+    public OwnBook(boolean lendable, boolean giftable, boolean exchangeable, BookStatus status) {
+        this(null, null, lendable, giftable, exchangeable, status);
     }
 }
