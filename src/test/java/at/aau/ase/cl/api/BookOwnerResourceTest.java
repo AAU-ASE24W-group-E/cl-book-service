@@ -69,7 +69,7 @@ class BookOwnerResourceTest {
                 .body("book.title", equalTo(book.title()))
                 .body("lendable", equalTo(false))
                 .body("giftable", equalTo(false))
-                .body("exchangable", equalTo(false))
+                .body("exchangeable", equalTo(false))
                 .body("status", equalTo("UNAVAILABLE"));
     }
 
@@ -131,7 +131,7 @@ class BookOwnerResourceTest {
                 .body("[0].book.title", equalTo(book.title()))
                 .body("[0].lendable", equalTo(false))
                 .body("[0].giftable", equalTo(false))
-                .body("[0].exchangable", equalTo(false))
+                .body("[0].exchangeable", equalTo(false))
                 .body("[0].status", equalTo("UNAVAILABLE"));
     }
 
