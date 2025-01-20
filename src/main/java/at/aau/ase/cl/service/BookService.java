@@ -16,9 +16,11 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BookService {
@@ -77,7 +79,7 @@ public class BookService {
                     .flatMap(w -> w.authors().stream())
                     .map(this::importAuthor)
                     .filter(Objects::nonNull)
-                    .toList();
+                    .collect(Collectors.toCollection(LinkedList::new));
             // create book
             book = createBook(book);
             Log.infof("Imported book with isbn %s: %s", isbnString, book);
