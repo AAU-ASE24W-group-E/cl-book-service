@@ -1,8 +1,6 @@
 package at.aau.ase.cl.mapper;
 
-import at.aau.ase.cl.api.model.AvailableBook;
 import at.aau.ase.cl.api.model.OwnBook;
-import at.aau.ase.cl.domain.AvailableBookProjection;
 import at.aau.ase.cl.domain.BookOwnershipEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -32,10 +30,5 @@ public interface OwnBookMapper {
     @Mapping(target = "book", ignore = true)
     void update(BookOwnershipEntity src, @MappingTarget BookOwnershipEntity target);
 
-    @Mapping(target = "lendable", source = "bookOwnership.lendable")
-    @Mapping(target = "exchangeable", source = "bookOwnership.exchangeable")
-    @Mapping(target = "giftable", source = "bookOwnership.giftable")
-    @Mapping(target = "status", source = "bookOwnership.status")
-    @Mapping(target = "distance", source = "roundedDistanceKm")
-    AvailableBook mapAvailableBook(AvailableBookProjection src);
+
 }
