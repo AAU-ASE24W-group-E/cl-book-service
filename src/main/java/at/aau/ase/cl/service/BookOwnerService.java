@@ -82,4 +82,15 @@ public class BookOwnerService {
     public List<BookOwnershipEntity> getOwnBooks(UUID ownerId, BookSortingProperty sort, Boolean descending) {
         return BookOwnershipEntity.findByOwner(ownerId, sort, descending);
     }
+
+    @Transactional
+    public void updateBookStatus(UUID bookId, UUID ownerId, BookStatus status) {
+        var entity = BookOwnershipEntity.findByOwnerAndBook(ownerId, bookId);
+        if (entity == null) {
+            Log.warnf("Book %s not found for owner %s", bookId, ownerId);
+            return;
+        }
+        Log.infof("Updating status of book %s of owner %s from %s to %s", bookId, ownerId, entity.status, status);
+        entity.status = status;
+    }
 }

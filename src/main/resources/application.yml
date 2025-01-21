@@ -64,6 +64,15 @@ mp:
           deserializer: at.aau.ase.cl.event.UserEventDeserializer
         group:
           id: book-service
+      lending:
+        connector: "smallrye-kafka"
+        topic: "cl.lending"
+        key:
+          deserializer: org.apache.kafka.common.serialization.UUIDDeserializer
+        value:
+          deserializer: at.aau.ase.cl.event.LendingEventDeserializer
+        group:
+          id: book-service
 
 "%prod":
   kafka:
