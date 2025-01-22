@@ -108,6 +108,22 @@ public class BookOwnershipEntity extends PanacheEntityBase {
                 .list();
     }
 
+    public static AvailableBookProjection findAvailableBookForOwner(UUID ownerId, UUID bookId) {
+        String ql = """
+                select a, b, o, 0.0 as distance
+                from BookOwnershipEntity a
+                join a.book b
+                join a.owner o
+                where o.id = :ownerId and b.id = :bookId
+                """;
+        Map<String, Object> params = new HashMap<>();
+        params.put("ownerId", ownerId);
+        params.put("bookId", bookId);
+
+        PanacheQuery<BookOwnershipEntity> query = find(ql, params);
+        return (query.project(AvailableBookProjection.class)).firstResult();
+    }
+
     static void addStatusFlagsCriteria(StringBuilder ql, AvailableBooksSearchCriteria criteria) {
         if (criteria.lendable || criteria.exchangeable || criteria.giftable) {
             List<String> statuses = new LinkedList<>();

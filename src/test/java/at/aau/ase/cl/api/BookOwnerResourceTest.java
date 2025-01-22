@@ -136,6 +136,30 @@ class BookOwnerResourceTest {
     }
 
     @Test
+    void getAvailableBookByOwnerShouldReturnOwnedBook() {
+        UUID ownerId = UUID.randomUUID();
+        var book = createTestBook();
+
+        given().contentType(ContentType.JSON)
+                .post(PATH_BOOK_OWNER_BOOK_ID, ownerId, book.id())
+                .then()
+                .statusCode(200);
+
+        given().get("/available-book/{bookId}/owner/{ownerId}",book.id(), ownerId)
+                .then()
+                .statusCode(200)
+                .body("owner.id", equalTo(ownerId.toString()))
+                .body("book.id", equalTo(book.id().toString()))
+                .body("book.isbn", equalTo(book.isbn()))
+                .body("book.title", equalTo(book.title()))
+                .body("lendable", equalTo(false))
+                .body("giftable", equalTo(false))
+                .body("exchangeable", equalTo(false))
+                .body("status", equalTo("UNAVAILABLE"));
+    }
+
+
+    @Test
     void getOwnBooksShouldReturnEmptyListIfOwnerHasNoBooks() {
         UUID ownerId = UUID.randomUUID();
         createTestBook();

@@ -6,12 +6,12 @@ import at.aau.ase.cl.api.model.FindAvailableBooksResponse;
 import at.aau.ase.cl.domain.AvailableBooksSearchCriteria;
 import at.aau.ase.cl.domain.BookOwnershipEntity;
 import at.aau.ase.cl.mapper.AvailableBookMapper;
-import at.aau.ase.cl.mapper.OwnBookMapper;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @ApplicationScoped
 public class AvailableBookService {
@@ -25,9 +25,14 @@ public class AvailableBookService {
         Log.debugf("Found %d available books by criteria %s", entities.size(), params);
         List<AvailableBook> results = entities.stream()
                 .limit(criteria.limit)
-                .map(OwnBookMapper.INSTANCE::mapAvailableBook)
+                .map(AvailableBookMapper.INSTANCE::mapAvailableBook)
                 .toList();
         boolean hasMore = criteria.limit < entities.size();
         return new FindAvailableBooksResponse(results, hasMore);
+    }
+
+    public AvailableBook findAvailableBookForOwner(UUID ownerId, UUID bookId){
+        var entity = BookOwnershipEntity.findAvailableBookForOwner(ownerId, bookId);
+        return AvailableBookMapper.INSTANCE.mapAvailableBook(entity);
     }
 }
